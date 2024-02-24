@@ -45,6 +45,7 @@ options:
   -k, --apkreplacement  Addendum to the above, I like to replace those with my own preferred APK utilities replacement. Feature of inserting your    
                         own list of APK is Coming Soon(TM)
   -s, --settings        My own preferred way of setting the phone, automatedly (EXPERIMENTAL!).
+  -v, --verbose         Disables clear() function.
 ```
 
 # Known Issues
