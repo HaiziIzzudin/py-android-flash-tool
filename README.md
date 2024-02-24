@@ -5,7 +5,7 @@
 
 # Compatibility
 Microsoft Windows.
-Linux ("/" based terminal SOON™️)
+Linux ("/" based terminal) SOON™️.
 
 # How to use?
 1. Have python installed
