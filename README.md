@@ -48,7 +48,7 @@ options:
 ```
 
 # Known Issues
-- I only have Redmi Note 7 to test here. Others if you have tested yours, please post updates in issues.
+- I only have Redmi Note 7 to test here. Others if you have tested yours, please post updates in [issues](https://github.com/HaiziIzzudin/py-android-flash-tool/issues).
 
 # Support these development on Ko-Fi
 https://ko-fi.com/haiziizzudin
