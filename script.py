@@ -84,7 +84,7 @@ def phoneState(mode: str):
         if (outputArr[5] == 'recovery'):   return 'recovery'
         elif (outputArr[5] == 'sideload'): return 'sideload'
         elif (outputArr[5] == 'device'):   return 'device'
-        else:                              return "intermediary"
+        else:                              return 'intermediary'
     elif (mode == 'fastboot'):
         output = subprocess.run(["fastboot", "devices"], capture_output=True, text=True)
         outputArr = (output.stdout).split()  
@@ -92,6 +92,11 @@ def phoneState(mode: str):
             outputArr.append(None)
         if (outputArr[1] == 'fastboot'): return 'fastboot'
         else:                            return "intermediary"
+    elif (mode == 'lock'):
+        output = subprocess.run(["adb", "shell", 'ls', '/sdcard'], capture_output=True, text=True)
+        outputArr = (output.stdout).split()
+        for i in outputArr:
+            if (i == 'Android'): return 'unlocked'
 
 
 
@@ -223,12 +228,30 @@ def rooting():
             break
     
     if not args.verbose: clear()
-    input("Please press [ENTER] key after your phone has booted, and unlocked")
+    
+    countdown('Waiting for phone to boot in', 7)
+    print("After your phone has booted, unlock it.\n\n")
+
+    while True:
+        if not (phoneState('lock') == 'unlocked'):
+            print('Waiting for user to unlock the device...', end='\r')
+        else:
+            print('Device has unlocked...')
+            break
+        sleep(.25)
 
     subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
 
     if not args.verbose: clear()
-    input("Your devices may prompt to reboot to finish ROOT setup. Press OK. \nWait until your device has booted.\n\nPress [ENTER] to continue.")
+    print("Your devices may prompt to reboot to finish ROOT setup. Press OK. \nWait until your device has booted.\n\n")
+
+    while True:
+        if (phoneState('adb') == 'device'):
+            print('Waiting for user to reboot...', end='\r')
+        else:
+            print('\nUser has rebooted...')
+            break
+        sleep(.25)
 
     sleep(5)
     while True:
@@ -242,11 +265,32 @@ def rooting():
             break
         sleep(.25)
     
-    sleep(10)
-    if not args.verbose: clear()
-    input("Press settings icon at the top of the Magisk main page, scroll down to Magisk section, and enable\n(i) Zygisk\n(ii) MagiskHide\n(iii) Enforce SuList\n\nAfter finished toggling, do reboot FROM MAGISK (at the top of the main Magisk page, circular arrow button).\n\nAfter doing so, press [ENTER] to continue.")
+    countdown('Waiting for phone to boot in', 7)
+    print("After your phone has booted, unlock it.\n\n")
 
-    sleep(5)
+    while True:
+        if not (phoneState('lock') == 'unlocked'):
+            print('Waiting for user to unlock the device...', end='\r')
+        else:
+            print('Device has unlocked...')
+            break
+        sleep(.25)
+
+    if not args.verbose: clear()
+    subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
+    print("Magisk has been opened for you. Press settings icon at the top of the Magisk main page, \nscroll down to Magisk section, and enable\n(i) Zygisk\n(ii) MagiskHide\n(iii) Enforce SuList\n\nAfter finished toggling, do reboot FROM MAGISK (at the top of the main Magisk page, circular arrow button).\n\n")
+
+    while True:
+        if (phoneState('adb') == 'device'):
+            print('Waiting for user to reboot...', end='\r')
+        else:
+            print('\nUser has rebooted...')
+            break
+        sleep(.25)
+
+
+    countdown('Waiting for phone to boot in', 7)
+
     while True:
         if (phoneState('adb') == 'intermediary'):
             print('Detecting reboot method...', end='\r')
@@ -255,6 +299,7 @@ def rooting():
             subprocess.run(['adb', 'reboot'])
             break
         elif (phoneState('adb') == 'device'):
+            print('Boot is normal.')
             break
         sleep(.25)
 
@@ -310,6 +355,7 @@ def MySettingsforNewROM():
 ##############################
 # ACTUAL PROGRAM STARTS HERE #
 ##############################
+
 if not args.verbose: clear()
 
 if not ((phoneState('adb') == 'device') or (phoneState('adb') == 'recovery')):
@@ -353,7 +399,7 @@ else:
             print("Application ends here. Thank you for using this application.         - Haizi")
         else:
             sleep(10)
-            print('Now, open Device info in Settings. Tap many times on Build number/ MIUI version until the toast say "You are now a developer!/ You have enabled development settings!"\n\nThen, go to developer options, and enable USB debugging. \n\nPlease authorize the debugging, and wait until further instructions.')
+            print('Now, open Device info in Settings. Tap many times on Build number until the toast say "You are now a developer!/ You have enabled development settings!"\n\nThen, go to developer options, and enable USB debugging. \n\nPlease authorize the debugging, and wait until further instructions.')
 
         if args.root:
             while True:
