@@ -61,7 +61,7 @@ def download(link: str, filename: str):
     if not os.path.exists(assetFolder):
         os.makedirs(assetFolder)
     
-    if args.verbose: clear()
+    if not args.verbose: clear()
     print("Downloading latest", filename, "...")
 
     response = requests.get(link)
@@ -190,7 +190,7 @@ def rooting():
     subprocess.run(["adb", "push", assetFolder + "\\" + "boot.img", "/sdcard/Download"])
     subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
 
-    if args.verbose: clear()
+    if not args.verbose: clear()
     print('On your phone screen rn, the Magisk app has been opened for you.\n(1) Please click "Install" button of the 1st card,\n(2) then select "Select and Patch a File",\n(3) then select the file "boot.img" in the "Downloads" folder.\n(4) Press "Let\'s go ->"\n\nPlease wait for a while for Magisk to finish patching, this program will auto fetch the file for you.')
 
     loop = True
@@ -212,7 +212,7 @@ def rooting():
     subprocess.run(['adb', 'shell', 'rm', '/sdcard/Download/' + output])
     subprocess.run(["adb", "reboot", "bootloader"])
 
-    if args.verbose: clear()
+    if not args.verbose: clear()
 
     while True:
         if not (phoneState('fastboot') == 'fastboot'):
@@ -222,12 +222,12 @@ def rooting():
             subprocess.run(["fastboot", "reboot"])
             break
     
-    if args.verbose: clear()
+    if not args.verbose: clear()
     input("Please press [ENTER] key after your phone has booted, and unlocked")
 
     subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
 
-    if args.verbose: clear()
+    if not args.verbose: clear()
     input("Your devices may prompt to reboot to finish ROOT setup. Press OK. \nWait until your device has booted.\n\nPress [ENTER] to continue.")
 
     sleep(5)
@@ -243,7 +243,7 @@ def rooting():
         sleep(.25)
     
     sleep(10)
-    if args.verbose: clear()
+    if not args.verbose: clear()
     input("Press settings icon at the top of the Magisk main page, scroll down to Magisk section, and enable\n(i) Zygisk\n(ii) MagiskHide\n(iii) Enforce SuList\n\nAfter finished toggling, do reboot FROM MAGISK (at the top of the main Magisk page, circular arrow button).\n\nAfter doing so, press [ENTER] to continue.")
 
     sleep(5)
@@ -310,7 +310,7 @@ def MySettingsforNewROM():
 ##############################
 # ACTUAL PROGRAM STARTS HERE #
 ##############################
-if args.verbose: clear()
+if not args.verbose: clear()
 
 if not ((phoneState('adb') == 'device') or (phoneState('adb') == 'recovery')):
     print('ADB debugging is not detected. Open Device info in Settings. Tap many times on Build number/ MIUI version until the toast say "You are now a developer!/ You have enabled development settings!"\n\nThen, go to developer options, and enable USB debugging. \n\nPlease authorize the debugging, and wait until further instructions.')
@@ -346,7 +346,7 @@ else:
                 break
 
         time.sleep(10)    
-        if args.verbose: clear()
+        if not args.verbose: clear()
         print("Once your phone has rebooted, do initial setup, test functionality, and set lockscreen.")
 
         if not (args.root or args.google or args.debloatgoogle or args.debloataosp):
@@ -398,7 +398,7 @@ else:
                 subprocess.run(["adb", "reboot"])
 
         if args.apkreplacement:
-            if args.verbose: clear()
+            if not args.verbose: clear()
             sleep(5)
             print("Installing replacement APKs...")
             for i in range(1, 5):
