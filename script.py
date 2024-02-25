@@ -443,6 +443,17 @@ else:
                 print("Rebooting to system...")
                 subprocess.run(["adb", "reboot"])
 
+            countdown('Waiting for phone to boot in', 7)
+            print("After your phone has booted, unlock it.\n\n")
+
+            while True:
+                if not (phoneState('lock') == 'unlocked'):
+                    print('Waiting for user to unlock the device...', end='\r')
+                else:
+                    print('Device has unlocked...')
+                    break
+                sleep(.25)
+
         if args.apkreplacement:
             if not args.verbose: clear()
             sleep(5)
