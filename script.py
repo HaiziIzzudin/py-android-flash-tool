@@ -27,6 +27,7 @@ parser.add_argument('-a', '--debloataosp', action='store_true', help='Debloat AO
 parser.add_argument('-k', '--apkreplacement', action='store_true', help='Addendum to the above, I like to replace those with my own preferred APK utilities replacement. Feature of inserting your own list of APK is Coming Soon(TM)')
 parser.add_argument('-s', '--settings', action='store_true', help='My own preferred way of setting the phone, automatedly (EXPERIMENTAL!).')
 parser.add_argument('-v', '--verbose', action='store_true', help='Disables clear() function.')
+parser.add_argument('--skip_rom', action='store_true', help='Skip ROM installation function.')
 
 args = parser.parse_args()
 
@@ -374,10 +375,13 @@ else:
             if not (phoneState('adb') == 'recovery'):
                 print('Waiting for phone to boot to recovery', end='\r')
             else:
-                input('Many custom ROM (and stock ROM) have some encryption in place. Therefore, please do "FACTORY RESET" first.\n(DATA WIPE IMMINENT AND UNRECOVERABLE!!! BACK UP YOUR DATA FIRST!!!)\n\nAfter done, press [ENTER] to continue.')
-                break
-
-        flash('rom')
+                if args.skip_rom:
+                    print('Flags --skip_rom specified. Skipping ROM flashing...')
+                    break
+                else:
+                    input('Many custom ROM (and stock ROM) have some encryption in place. Therefore, please do "FACTORY RESET" first.\n(DATA WIPE IMMINENT AND UNRECOVERABLE!!! BACK UP YOUR DATA FIRST!!!)\n\nAfter done, press [ENTER] to continue.')
+                    flash('rom')
+                    break
 
         if args.fdroid:
             download("https://f-droid.org/repo/org.fdroid.fdroid.privileged.ota_2130.zip", "fdroid-ota.zip")
@@ -429,10 +433,22 @@ else:
 
         if args.debloatgoogle:
             compileDebloater("custom")
+            while True:
+                if not (phoneState('adb') == 'device'):
+                    print('Waiting for authorized ADB mode...', end='\r')
+                else:
+                    subprocess.run(["adb", "reboot", "recovery"])
+                    break
             flash('debloater')
 
         if args.debloataosp:
             compileDebloater("aospBloat")
+            while True:
+                if not (phoneState('adb') == 'device'):
+                    print('Waiting for authorized ADB mode...', end='\r')
+                else:
+                    subprocess.run(["adb", "reboot", "recovery"])
+                    break
             flash('debloater')
 
         sleep(5)
