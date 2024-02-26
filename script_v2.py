@@ -115,25 +115,20 @@ def phoneState(mode: str):
 
 def compileDebloater(mode: str):
     
-  debloatDirPath = os.path.expanduser('~') + "\\py-android-flash-tool\\debloater"
-  
-  print("Gathering latest NikGapps debloater ZIP...")
-  if not os.path.exists(assetFolder + "\\debloater.zip"):
-    download("https://nchc.dl.sourceforge.net/project/nikgapps/Releases/Debloater/10-Feb-2024/Debloater-20240210-signed.zip", "debloater.zip")
+  debloatDirPath = assetFolder + "\\debloater"
   
   if mode == "custom":
+    
     print("Open NikGapps debloater.config file")
     debloatConfig = filedialog.askopenfilename(filetypes=typeCONFIG, title="Open NikGapps debloater.config file")
     print(f"File selected: {debloatConfig}")
   
   elif mode == "aospBloat":
       
-    if not os.path.exists(assetFolder + "\\debloater-config-aosp"):
-      os.makedirs(assetFolder + "\\debloater-config-aosp")
-    
-    download("https://raw.githubusercontent.com/HaiziIzzudin/py-android-flash-tool/main/debloater-config-aosp/debloater.config", "debloater-config-aosp\\debloater.config")
-
-    debloatConfig = assetFolder + "\\debloater-config-aosp\\debloater.config"
+    download('')
+  
+  
+  
 
   if os.path.exists(debloatDirPath):
     print("Removing and readding debloater folder...")
@@ -162,6 +157,12 @@ def compileDebloater(mode: str):
 
 
 def flash(whatToFlash: str):
+  
+  if not (phoneState('adb') == 'recovery'):
+    subprocess.run(["adb", "reboot", 'recovery'])
+
+  countdown('Giving some time in', 3)
+  
   print("In your recovery, enable ADB sideload.")
 
   while True:
@@ -315,7 +316,6 @@ def downloadNinstallAPK(index: int):
     "huskydg-magisk.apk",
     "ffupdater.apk", 
     "revanced.apk", 
-    "keyboard.apk",
     'aurora-store.apk',
   ]
 
@@ -323,7 +323,6 @@ def downloadNinstallAPK(index: int):
     "https://github.com/HuskyDG/magisk-files/releases/download/v26.4-kitsune-2/26.4-kitsune-2.apk",
     "https://github.com/Tobi823/ffupdater/releases/download/79.1.1/ffupdater-release.apk",
     "https://github.com/ReVanced/revanced-manager/releases/download/v1.18.0/revanced-manager-v1.18.0.apk",
-    "https://f-droid.org/repo/com.simplemobiletools.keyboard_24.apk",
     'https://auroraoss.com/AuroraStore/Stable/AuroraStore-4.4.1.apk',
   ]
 
@@ -351,10 +350,11 @@ if not args.verbose: clear()
 
 if args.fdroid: download("https://f-droid.org/repo/org.fdroid.fdroid.privileged.ota_2130.zip", "fdroid-ota.zip")
 if args.google: download("https://nchc.dl.sourceforge.net/project/nikgapps/Releases/NikGapps-T/10-Feb-2024/NikGapps-core-arm64-13-20240210-signed.zip", "nikgapps-13.zip")
+if (args.debloatgoogle or args.debloataosp): download("https://nchc.dl.sourceforge.net/project/nikgapps/Releases/Debloater/10-Feb-2024/Debloater-20240210-signed.zip", "debloater.zip")
 
 if not ((phoneState('adb') == 'device') or (phoneState('adb') == 'recovery')):
 
-  print('ADB debugging is not detected. Open Device info in Settings. Tap many times on Build number/ MIUI version until the toast say "You are now a developer!/ You have enabled development settings!"\n\nThen, go to developer options, and enable USB debugging. \n\nPlease authorize the debugging, and wait until further instructions.')
+  print('ADB debugging is not detected. Open Device info in Settings. Tap many times on Build number/ MIUI version until the toast say "You are now a developer!/ You have enabled development settings!"\n\nThen, go to developer options, and enable USB debugging. \n\nAfter done, run the program again.\n\nExiting...')
 
 else:
     
@@ -377,6 +377,7 @@ else:
         else:
           input('Many custom ROM (and stock ROM) have some encryption in place. Therefore, please do "FACTORY RESET" first.\n(DATA WIPE IMMINENT AND UNRECOVERABLE!!! BACK UP YOUR DATA FIRST!!!)\n\nAfter done, press [ENTER] to continue.')
           flash('rom')
+          break
         
 
   if args.fdroid: flash('fdroid')
