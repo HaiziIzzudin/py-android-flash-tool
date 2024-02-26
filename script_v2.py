@@ -447,10 +447,15 @@ else:
       ],
     ]
     
-    for i in module:
-      for j in i:
-        download(j[0], j[1])
-        subprocess.run(['adb', 'push', assetFolder + '\\' + j[1], '/sdcard/Download'])
+    # for i in module:
+    #   for j in i:
+    #     download(j[0], j[1])
+    #     subprocess.run(['adb', 'push', assetFolder + '\\' + j[1], '/sdcard/Download'])
+
+    download('https://github.com/LSPosed/LSPosed/releases/download/v1.9.2/LSPosed-v1.9.2-7024-zygisk-release.zip','lsposed-zygisk.zip')
+    download('https://github.com/chiteroman/PlayIntegrityFix/releases/download/v15.8/PlayIntegrityFix_v15.8.zip','PIF.zip')
+    subprocess.run(['adb', 'push', assetFolder + '\\' + 'lsposed-zygisk.zip', '/sdcard/Download'])
+    subprocess.run(['adb', 'push', assetFolder + '\\' + 'PIF.zip', '/sdcard/Download'])
     
     
 
