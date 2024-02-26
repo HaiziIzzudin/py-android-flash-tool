@@ -28,6 +28,7 @@ parser.add_argument('-k', '--apkreplacement', action='store_true', help='Addendu
 parser.add_argument('-s', '--settings', action='store_true', help='My own preferred way of setting the phone, automatedly (EXPERIMENTAL!).')
 parser.add_argument('-v', '--verbose', action='store_true', help='Disables clear() function.')
 parser.add_argument('--skip_rom', action='store_true', help='Skip ROM installation function.')
+parser.add_argument('--download_replace', action='store_true', help='Re-download all required assets.')
 
 args = parser.parse_args()
 
@@ -63,12 +64,15 @@ def download(link: str, filename: str):
         os.makedirs(assetFolder)
     
     if not args.verbose: clear()
-    print("Downloading latest", filename, "...")
+    print("Gathering latest", filename + "...")
 
     if not os.path.exists(assetFolder + '\\' + filename):
-        response = requests.get(link)
-        with open(assetFolder + '\\' + filename, 'wb') as file:
-            file.write(response.content)
+      response = requests.get(link)
+      with open(assetFolder + '\\' + filename, 'wb') as file:
+          file.write(response.content)
+      print(filename, 'downloaded successfully.')
+    else:
+      print(filename, 'already downloaded.')
 
 def countdown(message: str, seconds: int):
     # how many seconds you want to wait
