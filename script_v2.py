@@ -67,7 +67,7 @@ def download(link: str, filename: str):
 
     if not os.path.exists(assetFolder + '\\' + filename):
         response = requests.get(link)
-        with open(filename, 'wb') as file:
+        with open(assetFolder + '\\' + filename, 'wb') as file:
             file.write(response.content)
 
 def countdown(message: str, seconds: int):
