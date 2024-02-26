@@ -114,20 +114,17 @@ def phoneState(mode: str):
 
 
 def compileDebloater(mode: str):
-    
-  debloatDirPath = assetFolder + "\\debloater"
   
   if mode == "custom":
-    
     print("Open NikGapps debloater.config file")
     debloatConfig = filedialog.askopenfilename(filetypes=typeCONFIG, title="Open NikGapps debloater.config file")
     print(f"File selected: {debloatConfig}")
-  
   elif mode == "aospBloat":
-      
-    download('')
-  
-  
+    download('https://raw.githubusercontent.com/HaiziIzzudin/py-android-flash-tool/main/debloater-aosp/debloater.config','debloater.config')
+    debloatConfig = assetFolder + '\\debloater.config'
+
+
+  debloatDirPath = assetFolder + "\\debloater"
   
 
   if os.path.exists(debloatDirPath):
