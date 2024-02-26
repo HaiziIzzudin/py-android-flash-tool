@@ -65,9 +65,10 @@ def download(link: str, filename: str):
     if not args.verbose: clear()
     print("Downloading latest", filename, "...")
 
-    response = requests.get(link)
-    with open(assetFolder + "\\" + filename, 'wb') as file:
-        file.write(response.content)
+    if not os.path.exists(assetFolder + '\\' + filename):
+        response = requests.get(link)
+        with open(filename, 'wb') as file:
+            file.write(response.content)
 
 def countdown(message: str, seconds: int):
     # how many seconds you want to wait
@@ -210,7 +211,6 @@ def rooting():
                 loop = False
             else:
                 print('Waiting for magisk_patched file...', end='\r')
-
         sleep(.25)
 
     countdown('Pulling patched image in', 20)
@@ -313,15 +313,15 @@ def rooting():
 def downloadNinstallAPK(index: int):
 
     apkName = [
-        "huskydg-magisk",
+        "huskydg-magisk.apk",
         
-        "ffupdater", 
+        "ffupdater.apk", 
 
-        "revanced", 
+        "revanced.apk", 
 
-        "keyboard",
+        "keyboard.apk",
 
-        'opencamera',
+        'aurora-store.apk',
     ]
 
     downloadLink = [
@@ -332,13 +332,14 @@ def downloadNinstallAPK(index: int):
         "https://github.com/ReVanced/revanced-manager/releases/download/v1.18.0/revanced-manager-v1.18.0.apk",
 
         "https://f-droid.org/repo/com.simplemobiletools.keyboard_24.apk",
+        
+        'https://auroraoss.com/AuroraStore/Stable/AuroraStore-4.4.1.apk',
 
-        'https://f-droid.org/repo/net.sourceforge.opencamera_88.apk',
     ]
 
-    download(downloadLink[index], (apkName[index] + ".apk"))
+    download(downloadLink[index], apkName[index])
     
-    subprocess.run(["adb", "install", assetFolder + "\\" + apkName[index] + ".apk"])
+    subprocess.run(["adb", "install", assetFolder + "\\" + apkName[index]])
 
 
 
@@ -419,7 +420,7 @@ else:
 
         if args.google:
 
-            if not os.path.exists(assetFolder + "\\nikgapps-13.zip"):
+            if not os.path.exists(assetFolder + "nikgapps-13.zip"):
                 download("https://nchc.dl.sourceforge.net/project/nikgapps/Releases/NikGapps-T/10-Feb-2024/NikGapps-core-arm64-13-20240210-signed.zip", "nikgapps-13.zip")
 
             while True:
@@ -428,7 +429,6 @@ else:
                 else:
                     subprocess.run(["adb", "reboot", "recovery"])
                     break
-            
             flash('google')
 
         if args.debloatgoogle:
@@ -472,10 +472,16 @@ else:
 
         if args.apkreplacement:
             if not args.verbose: clear()
-            sleep(5)
-            print("Installing replacement APKs...")
-            for i in range(1, 5):
-                downloadNinstallAPK(i)
+            while True:
+                if not (phoneState('lock') == 'unlocked'):
+                    print('Waiting for user to unlock the device...', end='\r')
+                else:
+                    print('Device has unlocked...')
+                    print("Installing replacement APKs...")
+                    for i in range(1, 5):
+                        downloadNinstallAPK(i)
+                    break
+                sleep(.25)
 
         if args.settings:
             MySettingsforNewROM()
