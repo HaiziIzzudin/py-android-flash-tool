@@ -17,16 +17,18 @@ import argparse
 # SYSTEM ARGUMENTS #
 ####################
 
-parser = argparse.ArgumentParser(description="A handmade script to automate repeating chores of flashing Android images.")
+parser = argparse.ArgumentParser(description="A handmade script to automate repeating chores of flashing Android images.\n\nGApps and debloater script is powered by NikGapps debloater script.")
 
 parser.add_argument('-r', '--root', action='store_true', help='Include ROOT')
 parser.add_argument('-f', '--fdroid', action='store_true', help='Include F-droid Priveleged OTA Script')
-parser.add_argument('-g', '--google', action='store_true', help='Flash Google Apps (Powered by NikGapps)')
-parser.add_argument('-d', '--debloatgoogle', action='store_true', help='Debloat Google Apps (Applicable if you coming from Pixel-like ROMs, or Stock ROM with google Bloat). REMINDER: This script WILL NOT remove Google core binaries (GSF, GPlayServices, Phonesky - PlayStore, Velvet - Google Main App; Powered by NikGapps debloater script).')
-parser.add_argument('-a', '--debloataosp', action='store_true', help='Debloat AOSP ROM (Applicable if you annoyyed with AOSP included apps like Recorder, Browser, Aosp Keyboard, Calendar, Calculator, Camera, etc.). REMINDER: Script has been tested on LineageOS and ArrowOS, other ROMs may remove some if not none.; Powered by NikGapps debloater script).')
+parser.add_argument('-g', '--google', action='store_true', help='Flash Google Apps (right now only support Android 13).')
+parser.add_argument('-d', '--debloatgoogle', action='store_true', help='Debloat Google Apps (Applicable if you coming from Pixel-like ROMs, or Stock ROM with google Bloat). REMINDER: This script WILL NOT remove Google core binaries (GSF, GPlayServices, Phonesky - PlayStore, Velvet - Google Main App.')
+parser.add_argument('-a', '--debloataosp', action='store_true', help='Debloat AOSP ROM (Applicable if you annoyyed with AOSP included apps like Recorder, Browser, Aosp Keyboard, Calendar, Calculator, Camera, etc.). REMINDER: Script has been tested on LineageOS and ArrowOS, other ROMs may remove some if not none.')
 parser.add_argument('-k', '--apkreplacement', action='store_true', help='Addendum to the above, I like to replace those with my own preferred APK utilities replacement. Feature of inserting your own list of APK is Coming Soon(TM)')
 parser.add_argument('-s', '--settings', action='store_true', help='My own preferred way of setting the phone, automatedly (EXPERIMENTAL!).')
 parser.add_argument('-v', '--verbose', action='store_true', help='Disables clear() function.')
+parser.add_argument('-m', '--magisk_module', action='store_true', help='Push to the device some of useful magisk modules that I collect.')
+parser.add_argument('--debloat_aftersetup', action='store_true', help='Some ROMs (particularly the Pixel based) have finish setup prompts, which is annoyying.\nThis flag will flash debloater that removed setup-related bloats.')
 parser.add_argument('--skip_rom', action='store_true', help='Skip ROM installation function.')
 parser.add_argument('--download_replace', action='store_true', help='Re-download all required assets.')
 
@@ -432,7 +434,26 @@ else:
           downloadNinstallAPK(i)
         break
       sleep(.25)
+  
+  if args.magisk_module:
+    module = [
+      [
+        'https://github.com/LSPosed/LSPosed/releases/download/v1.9.2/LSPosed-v1.9.2-7024-zygisk-release.zip',
+        'lsposed-zygisk.zip'
+      ],
+      [
+        'https://github.com/chiteroman/PlayIntegrityFix/releases/download/v15.8/PlayIntegrityFix_v15.8.zip',
+        'PIF.zip'
+      ],
+    ]
     
+    for i in module:
+      for j in i:
+        download(j[0], j[1])
+        subprocess.run(['adb', 'push', assetFolder + '\\' + j[1], '/sdcard/Download'])
+    
+    
+
 
   if args.settings:
     MySettingsforNewROM()
