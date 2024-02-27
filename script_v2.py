@@ -328,7 +328,7 @@ def downloadNinstallAPK(index: int):
     "https://github.com/Tobi823/ffupdater/releases/download/79.1.1/ffupdater-release.apk",
     "https://github.com/ReVanced/revanced-manager/releases/download/v1.18.0/revanced-manager-v1.18.0.apk",
     'https://auroraoss.com/AuroraStore/Stable/AuroraStore-4.4.1.apk',
-    '',
+    'https://github.com/HaiziIzzudin/py-android-flash-tool/raw/main/mirrored-apk/ru.zdevs.zarchiver_1.0.9-10925.apk',
   ]
 
   download(downloadLink[index], apkName[index])
