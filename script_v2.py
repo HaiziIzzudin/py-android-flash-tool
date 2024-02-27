@@ -320,6 +320,7 @@ def downloadNinstallAPK(index: int):
     "ffupdater.apk", 
     "revanced.apk", 
     'aurora-store.apk',
+    'zarchiver.apk',
   ]
 
   downloadLink = [
@@ -327,6 +328,7 @@ def downloadNinstallAPK(index: int):
     "https://github.com/Tobi823/ffupdater/releases/download/79.1.1/ffupdater-release.apk",
     "https://github.com/ReVanced/revanced-manager/releases/download/v1.18.0/revanced-manager-v1.18.0.apk",
     'https://auroraoss.com/AuroraStore/Stable/AuroraStore-4.4.1.apk',
+    '',
   ]
 
   download(downloadLink[index], apkName[index])
@@ -436,22 +438,6 @@ else:
       sleep(.25)
   
   if args.magisk_module:
-    module = [
-      [
-        'https://github.com/LSPosed/LSPosed/releases/download/v1.9.2/LSPosed-v1.9.2-7024-zygisk-release.zip',
-        'lsposed-zygisk.zip'
-      ],
-      [
-        'https://github.com/chiteroman/PlayIntegrityFix/releases/download/v15.8/PlayIntegrityFix_v15.8.zip',
-        'PIF.zip'
-      ],
-    ]
-    
-    # for i in module:
-    #   for j in i:
-    #     download(j[0], j[1])
-    #     subprocess.run(['adb', 'push', assetFolder + '\\' + j[1], '/sdcard/Download'])
-
     download('https://github.com/LSPosed/LSPosed/releases/download/v1.9.2/LSPosed-v1.9.2-7024-zygisk-release.zip','lsposed-zygisk.zip')
     download('https://github.com/chiteroman/PlayIntegrityFix/releases/download/v15.8/PlayIntegrityFix_v15.8.zip','PIF.zip')
     subprocess.run(['adb', 'push', assetFolder + '\\' + 'lsposed-zygisk.zip', '/sdcard/Download'])
