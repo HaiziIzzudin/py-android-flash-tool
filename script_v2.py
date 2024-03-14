@@ -1,10 +1,8 @@
 import subprocess
 import zipfile
 import os
-import time
 from time import sleep
 import requests
-import tkinter as tk
 from tkinter import filedialog
 import shutil
 import argparse
@@ -46,6 +44,7 @@ assetFolder = (os.path.expanduser('~') + "\\py-android-flash-tool")
 #####################
 
 def clear():
+  if not args.verbose:
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def download(link: str, filename: str):
@@ -53,7 +52,7 @@ def download(link: str, filename: str):
     if not os.path.exists(assetFolder):
         os.makedirs(assetFolder)
     
-    if not args.verbose: clear()
+    clear()
     print("Gathering latest", filename + "...")
 
     if not os.path.exists(assetFolder + '\\' + filename):
@@ -170,7 +169,7 @@ def rooting():
   subprocess.run(["adb", "push", assetFolder + "\\" + "boot.img", "/sdcard/Download"])
   subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
 
-  if not args.verbose: clear()
+  clear()
   print('On your phone screen rn, the Magisk app has been opened for you.\n(1) Please click "Install" button of the 1st card,\n(2) then select "Select and Patch a File",\n(3) then select the file "boot.img" in the "Downloads" folder.\n(4) Press "Let\'s go ->"\n\nPlease wait for a while for Magisk to finish patching, this program will auto fetch the file for you.')
 
   loop = True
@@ -191,7 +190,7 @@ def rooting():
   subprocess.run(['adb', 'shell', 'rm', '/sdcard/Download/' + output])
   subprocess.run(["adb", "reboot", "bootloader"])
 
-  if not args.verbose: clear()
+  clear()
 
   while True:
     if not (phoneState('fastboot') == 'fastboot'):
@@ -201,7 +200,7 @@ def rooting():
       subprocess.run(["fastboot", "reboot"])
       break
   
-  if not args.verbose: clear()
+  clear()
   
   countdown('Waiting for phone to boot in', 7)
   print("After your phone has booted, unlock it.\n\n")
@@ -216,7 +215,7 @@ def rooting():
 
   subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
 
-  if not args.verbose: clear()
+  clear()
   print("Your devices may prompt to reboot to finish ROOT setup. Press OK. \nWait until your device has booted.\n\n")
 
   while True:
@@ -250,7 +249,7 @@ def rooting():
       break
     sleep(.25)
 
-  if not args.verbose: clear()
+  clear()
   subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
   print("Magisk has been opened for you. Press settings icon at the top of the Magisk main page, \nscroll down to Magisk section, and enable\n(i) Zygisk\n(ii) MagiskHide\n(iii) Enforce SuList\n\nAfter finished toggling, do reboot FROM MAGISK (at the top of the main Magisk page, circular arrow button).\n\n")
 
@@ -310,7 +309,7 @@ def MySettingsforNewROM():
 # ACTUAL PROGRAM STARTS HERE #
 ##############################
 
-if not args.verbose: clear()
+clear()
 
 if args.fdroid: download("https://f-droid.org/repo/org.fdroid.fdroid.privileged.ota_2130.zip", "fdroid-ota.zip")
 if args.google: download("https://nchc.dl.sourceforge.net/project/nikgapps/Releases/NikGapps-T/10-Feb-2024/NikGapps-core-arm64-13-20240210-signed.zip", "nikgapps-13.zip")
