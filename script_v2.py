@@ -10,9 +10,6 @@ import shutil
 import argparse
 
 
-
-
-
 ####################
 # SYSTEM ARGUMENTS #
 ####################
@@ -35,14 +32,6 @@ parser.add_argument('--download_replace', action='store_true', help='Re-download
 args = parser.parse_args()
 
 
-
-
-
-
-
-
-
-
 ###################
 # GLOBAL VARIABLE #
 ###################
@@ -50,7 +39,6 @@ args = parser.parse_args()
 typeZIP = (('ROM ZIP Files', '*.zip'), ('All files', '*.*'))
 typeCONFIG = (('Nikgapps CONFIG File', '*.config'), ('All files', '*.*'))
 assetFolder = (os.path.expanduser('~') + "\\py-android-flash-tool")
-
 
 
 #####################
@@ -107,18 +95,6 @@ def phoneState(mode: str):
             if (i == 'Android'): return 'unlocked'
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 def compileDebloater(mode: str):
   
   if mode == "custom":
@@ -156,9 +132,6 @@ def compileDebloater(mode: str):
         zipf.write(file_path, os.path.relpath(file_path, debloatDirPath))
 
 
-
-
-
 def flash(whatToFlash: str):
   
   if not (phoneState('adb') == 'recovery'):
@@ -184,9 +157,6 @@ def flash(whatToFlash: str):
       print("Flashing", k, "...")
       subprocess.run(["adb", "sideload", k])
       break
-
-
-
 
 
 def rooting():
@@ -308,11 +278,6 @@ def rooting():
     sleep(.25)
 
 
-
-
-
-
-
 def downloadNinstallAPK(index: int):
 
   apkName = [
@@ -339,12 +304,6 @@ def downloadNinstallAPK(index: int):
 def MySettingsforNewROM():
   subprocess.run(["adb", "shell", "cmd", "bluetooth_manager", "disable"])
   subprocess.run(["adb", "shell", "settings", "put", "system", "screen_off_timeout", "1800000"])
-
-
-
-
-
-
 
 
 ##############################
