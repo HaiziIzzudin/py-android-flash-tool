@@ -15,7 +15,6 @@ import argparse
 parser = argparse.ArgumentParser(description="A handmade script to automate repeating chores of flashing Android images.\n\nGApps and debloater script is powered by NikGapps debloater script.")
 
 parser.add_argument('-r', '--root', action='store_true', help='Include ROOT')
-parser.add_argument('-f', '--fdroid', action='store_true', help='Include F-droid Priveleged OTA Script')
 parser.add_argument('-g', '--google', action='store_true', help='Flash Google Apps (right now only support Android 13).')
 parser.add_argument('-d', '--debloatgoogle', action='store_true', help='Debloat Google Apps (Applicable if you coming from Pixel-like ROMs, or Stock ROM with google Bloat). REMINDER: This script WILL NOT remove Google core binaries (GSF, GPlayServices, Phonesky - PlayStore, Velvet - Google Main App.')
 parser.add_argument('-a', '--debloataosp', action='store_true', help='Debloat AOSP ROM (Applicable if you annoyyed with AOSP included apps like Recorder, Browser, Aosp Keyboard, Calendar, Calculator, Camera, etc.). REMINDER: Script has been tested on LineageOS and ArrowOS, other ROMs may remove some if not none.')
@@ -23,9 +22,9 @@ parser.add_argument('-k', '--apkreplacement', action='store_true', help='Addendu
 parser.add_argument('-s', '--settings', action='store_true', help='My own preferred way of setting the phone, automatedly (EXPERIMENTAL!).')
 parser.add_argument('-v', '--verbose', action='store_true', help='Disables clear() function.')
 parser.add_argument('-m', '--magisk_module', action='store_true', help='Push to the device some of useful magisk modules that I collect.')
-parser.add_argument('--debloat_aftersetup', action='store_true', help='Some ROMs (particularly the Pixel based) have finish setup prompts, which is annoyying.\nThis flag will flash debloater that removed setup-related bloats.')
 parser.add_argument('--skip_rom', action='store_true', help='Skip ROM installation function.')
 parser.add_argument('--download_replace', action='store_true', help='Re-download all required assets.')
+parser.add_argument('--hzk', action='store_true', help='My own setting.')
 
 args = parser.parse_args()
 
@@ -42,6 +41,14 @@ assetFolder = (os.path.expanduser('~') + "\\py-android-flash-tool")
 #####################
 # GENERAL FUNCTIONS #
 #####################
+
+
+if args.hzk:
+  args.root = True
+  args.debloatgoogle = True
+  args.apkreplacement = True
+  args.settings = True
+  args.verbose = True
 
 def clear():
   if not args.verbose:
@@ -71,27 +78,27 @@ def countdown(message: str, seconds: int):
         seconds = seconds - 1
 
 def phoneState(mode: str):
-    if (mode == 'adb'):
-        output = subprocess.run(["adb", "devices"], capture_output=True, text=True)
-        outputArr = (output.stdout).split()  
-        while len(outputArr) <  6:
-            outputArr.append(None)
-        if (outputArr[5] == 'recovery'):   return 'recovery'
-        elif (outputArr[5] == 'sideload'): return 'sideload'
-        elif (outputArr[5] == 'device'):   return 'device'
-        else:                              return 'intermediary'
-    elif (mode == 'fastboot'):
-        output = subprocess.run(["fastboot", "devices"], capture_output=True, text=True)
-        outputArr = (output.stdout).split()  
-        while len(outputArr) <  2:
-            outputArr.append(None)
-        if (outputArr[1] == 'fastboot'): return 'fastboot'
-        else:                            return "intermediary"
-    elif (mode == 'lock'):
-        output = subprocess.run(["adb", "shell", 'ls', '/sdcard'], capture_output=True, text=True)
-        outputArr = (output.stdout).split()
-        for i in outputArr:
-            if (i == 'Android'): return 'unlocked'
+  if (mode == 'adb'):
+    output = subprocess.run(["adb", "devices"], capture_output=True, text=True)
+    outputArr = (output.stdout).split()  
+    while len(outputArr) <  6:
+      outputArr.append(None)
+    if (outputArr[5] == 'recovery'):   return 'recovery'
+    elif (outputArr[5] == 'sideload'): return 'sideload'
+    elif (outputArr[5] == 'device'):   return 'device'
+    else:                              return 'intermediary'
+  elif (mode == 'fastboot'):
+    output = subprocess.run(["fastboot", "devices"], capture_output=True, text=True)
+    outputArr = (output.stdout).split()  
+    while len(outputArr) <  2:
+      outputArr.append(None)
+    if (outputArr[1] == 'fastboot'): return 'fastboot'
+    else:                            return "intermediary"
+  elif (mode == 'lock'):
+    output = subprocess.run(["adb", "shell", 'ls', '/sdcard'], capture_output=True, text=True)
+    outputArr = (output.stdout).split()
+    for i in outputArr:
+      if (i == 'Android'): return 'unlocked'
 
 
 def compileDebloater(mode: str):
@@ -122,6 +129,21 @@ def compileDebloater(mode: str):
 
   print("Integrating debloater config file...")
   shutil.copy2(debloatConfig, debloatDirPath + "\\afzc\\debloater.config")
+
+
+
+  # Open the file in read mode and read all lines into a list
+  with open(debloatDirPath + "\\afzc\\nikgapps.config", 'r') as file:
+      lines = file.readlines()
+
+  # Modify the line at index 30 (line 31)
+  lines[30] = 'use_zip_config=1\n'
+
+  # Open the file in write mode and overwrite it with the modified lines
+  with open(debloatDirPath + "\\afzc\\nikgapps.config", 'w') as file:
+      file.writelines(lines)
+
+
 
   print("Re-zipping debloater.zip file...")
   with zipfile.ZipFile((debloatDirPath + "_mod.zip"), 'w') as zipf:
@@ -251,47 +273,32 @@ def rooting():
 
   clear()
   subprocess.run(["adb", "shell", "am", "start", "io.github.huskydg.magisk/com.topjohnwu.magisk.ui.MainActivity"])
-  print("Magisk has been opened for you. Press settings icon at the top of the Magisk main page, \nscroll down to Magisk section, and enable\n(i) Zygisk\n(ii) MagiskHide\n(iii) Enforce SuList\n\nAfter finished toggling, do reboot FROM MAGISK (at the top of the main Magisk page, circular arrow button).\n\n")
+  print("Magisk has been opened for you. Press settings icon at the top of the Magisk main page, \nscroll down to Magisk section, and enable\n(i) Zygisk\n(ii) MagiskHide\n(iii) Enforce SuList\n\nAfter finished toggling, do REBOOT FROM RECOVERY from MAGISK (at the top of the main Magisk page, circular arrow button).\n\n")
 
   while True:
-    if (phoneState('adb') == 'device'):
-      print('Waiting for user to reboot...', end='\r')
+    if not (phoneState('adb') == 'recovery'):
+      print('Waiting for booting to recovery...', end='\r')
     else:
-      print('\nUser has rebooted...')
+      print('\nPhone has booted to recovery...')
       break
     sleep(.25)
 
 
-  countdown('Waiting for phone to boot in', 7)
-
-  while True:
-    if (phoneState('adb') == 'intermediary'):
-      print('Detecting reboot method...', end='\r')
-    elif (phoneState('adb') == 'recovery'):
-      countdown('Detected booting to recovery. Booting to system in', 5)
-      subprocess.run(['adb', 'reboot'])
-      break
-    elif (phoneState('adb') == 'device'):
-      print('Boot is normal.')
-      break
-    sleep(.25)
 
 
 def downloadNinstallAPK(index: int):
 
   apkName = [
     "huskydg-magisk.apk",
-    "ffupdater.apk", 
     "revanced.apk", 
-    'aurora-store.apk',
+    'fdroid.apk',
     'zarchiver.apk',
   ]
 
   downloadLink = [
     "https://github.com/HuskyDG/magisk-files/releases/download/v26.4-kitsune-2/26.4-kitsune-2.apk",
-    "https://github.com/Tobi823/ffupdater/releases/download/79.1.1/ffupdater-release.apk",
     "https://github.com/ReVanced/revanced-manager/releases/download/v1.18.0/revanced-manager-v1.18.0.apk",
-    'https://auroraoss.com/AuroraStore/Stable/AuroraStore-4.4.1.apk',
+    'https://f-droid.org/F-Droid.apk',
     'https://github.com/HaiziIzzudin/py-android-flash-tool/raw/main/mirrored-apk/ru.zdevs.zarchiver_1.0.9-10925.apk',
   ]
 
@@ -311,7 +318,6 @@ def MySettingsforNewROM():
 
 clear()
 
-if args.fdroid: download("https://f-droid.org/repo/org.fdroid.fdroid.privileged.ota_2130.zip", "fdroid-ota.zip")
 if args.google: download("https://nchc.dl.sourceforge.net/project/nikgapps/Releases/NikGapps-T/10-Feb-2024/NikGapps-core-arm64-13-20240210-signed.zip", "nikgapps-13.zip")
 if (args.debloatgoogle or args.debloataosp): download("https://nchc.dl.sourceforge.net/project/nikgapps/Releases/Debloater/10-Feb-2024/Debloater-20240210-signed.zip", "debloater.zip")
 
@@ -335,28 +341,16 @@ else:
       ROMdir = os.path.dirname(ROMfile)
       
       subprocess.run(["adb", "reboot", "recovery"])
+      
       while True:
         if not (phoneState('adb') == 'recovery'): print('Waiting for phone to boot to recovery', end='\r')
         else:
           input('Many custom ROM (and stock ROM) have some encryption in place. Therefore, please do "FACTORY RESET" first.\n(DATA WIPE IMMINENT AND UNRECOVERABLE!!! BACK UP YOUR DATA FIRST!!!)\n\nAfter done, press [ENTER] to continue.')
           flash('rom')
           break
-        
-
-  if args.fdroid: flash('fdroid')
 
 
   if args.google: flash('google')
-
-
-  if args.debloatgoogle:
-    compileDebloater("custom")
-    flash('debloater')
-
-
-  if args.debloataosp:
-    compileDebloater("aospBloat")
-    flash('debloater')
 
 
   if args.root:
@@ -381,20 +375,42 @@ else:
         downloadNinstallAPK(0) # dl and install magsik
         rooting()
         break
-    
-    
+
+
+
+  if args.debloatgoogle:
+    compileDebloater("custom")
+    flash('debloater')
+
+  if args.debloataosp:
+    compileDebloater("aospBloat")
+    flash('debloater')
+
+  countdown('Continuing in', 10)
+
   if args.apkreplacement:
+    
+    while True:
+      sleep(.25)
+      if not (phoneState('adb') == 'recovery'):
+        print('Waiting for device ready...', end='\r')
+      else:
+        subprocess.run(["adb", "reboot"])
+        break
+    
     while True:
       if not (phoneState('lock') == 'unlocked'):
         print('Waiting for user to unlock the device...', end='\r')
       else:
         print('Device has unlocked...')
         print("Installing replacement APKs...")
-        for i in range(1, 5):
+        for i in range(1, 4):
           downloadNinstallAPK(i)
         break
       sleep(.25)
   
+
+
   if args.magisk_module:
     download('https://github.com/LSPosed/LSPosed/releases/download/v1.9.2/LSPosed-v1.9.2-7024-zygisk-release.zip','lsposed-zygisk.zip')
     download('https://github.com/chiteroman/PlayIntegrityFix/releases/download/v15.8/PlayIntegrityFix_v15.8.zip','PIF.zip')
