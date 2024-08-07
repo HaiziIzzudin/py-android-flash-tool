@@ -45,8 +45,8 @@ assetFolder = (os.path.expanduser('~') + "\\py-android-flash-tool")
 
 if args.hzk:
   args.root = True
-  args.debloatgoogle = True
-  args.apkreplacement = True
+  # args.debloatgoogle = True
+  # args.apkreplacement = True
   args.settings = True
   args.verbose = True
 
@@ -166,14 +166,10 @@ def flash(whatToFlash: str):
     if not (phoneState('adb') == 'sideload'):
       print('Waiting for sideload mode', end='\r')
     else:
-      if (whatToFlash == 'rom'):
-        k = ROMfile
-      elif (whatToFlash == 'fdroid'):
-        k = assetFolder + "\\fdroid-ota.zip"
-      elif (whatToFlash == 'google'):
-        k = assetFolder + "\\nikgapps-13.zip"
-      elif (whatToFlash == 'debloater'):
-        k = assetFolder + "\\debloater_mod.zip"
+      if (whatToFlash == 'rom'):         k = ROMfile
+      elif (whatToFlash == 'fdroid'):    k = assetFolder + "\\fdroid-ota.zip"
+      elif (whatToFlash == 'google'):    k = assetFolder + "\\nikgapps-13.zip"
+      elif (whatToFlash == 'debloater'): k = assetFolder + "\\debloater_mod.zip"
         
       print("Flashing", k, "...")
       subprocess.run(["adb", "sideload", k])
